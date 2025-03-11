@@ -5,7 +5,6 @@ import { db } from "@/app/_lib/prisma";
 import { OpenAI } from "openai";
 import { generateAiReportSchema } from "./shema";
 
-
 export const generateAiReport = async ({ month }: { month: string }) => {
   // Validar entrada com o schema
   generateAiReportSchema.parse({ month });
@@ -50,7 +49,7 @@ Aqui estão minhas transações:
 ${transactions
   .map(
     (transaction) =>
-      `${new Date(transaction.date).toLocaleDateString("pt-BR")}-${transaction.type}-R$${transaction.amount.toFixed(2)}-${transaction.category}`
+      `${new Date(transaction.date).toLocaleDateString("pt-BR")}-${transaction.type}-R$${transaction.amount.toFixed(2)}-${transaction.category}`,
   )
   .join(";")}`;
 
@@ -61,7 +60,8 @@ ${transactions
       messages: [
         {
           role: "system",
-          content: "Você é um especialista em finanças pessoais e ajuda a melhorar a organização financeira das pessoas.",
+          content:
+            "Você é um especialista em finanças pessoais e ajuda a melhorar a organização financeira das pessoas.",
         },
         {
           role: "user",
@@ -71,7 +71,9 @@ ${transactions
     });
 
     // Retornar o conteúdo gerado pelo ChatGPT
-    return completion.choices[0].message?.content || "Erro ao gerar o relatório.";
+    return (
+      completion.choices[0].message?.content || "Erro ao gerar o relatório."
+    );
   } catch (error) {
     console.error("Erro ao gerar relatório AI:", error);
     throw new Error("Erro ao gerar relatório. Tente novamente mais tarde.");
